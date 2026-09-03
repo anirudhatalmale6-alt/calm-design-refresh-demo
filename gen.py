@@ -107,13 +107,23 @@ PRODUCTS = [
 ]
 
 
+# In the PHP build these stay site-absolute ("/articles"). For this static
+# demo they are prefixed so every menu item opens the real page rather than
+# 404ing on the preview host.
+DEMO_BASE = "https://www.calm.com.au"
+
+
+def u(h):
+    return DEMO_BASE + h if h.startswith("/") else h
+
+
 def links(items):
-    return "\n".join(f'          <a href="{h}">{html.escape(t)}</a>'
+    return "\n".join(f'          <a href="{u(h)}">{html.escape(t)}</a>'
                      for t, h in items)
 
 
 def drawer_links(items):
-    return "\n".join(f'        <a href="{h}">{html.escape(t)}</a>'
+    return "\n".join(f'        <a href="{u(h)}">{html.escape(t)}</a>'
                      for t, h in items)
 
 
@@ -125,11 +135,11 @@ def header(active=""):
 
 <div class="topbar">
   <div class="topbar-inner">
-    <a href="/" class="logo">CalmLifeSkills<span>.</span></a>
+    <a href="{u('/')}" class="logo">CalmLifeSkills<span>.</span></a>
 
     <nav class="nav-links" aria-label="Main">
       <div class="has-mega">
-        <a href="/about"{cls('about')}>About</a>
+        <a href="{u('/about')}"{cls('about')}>About</a>
         <div class="mega cols-1">
           <div>
             <h5>About</h5>
@@ -139,7 +149,7 @@ def header(active=""):
       </div>
 
       <div class="has-mega">
-        <a href="/topics"{cls('topics')}>Calm Topics</a>
+        <a href="{u('/topics')}"{cls('topics')}>Calm Topics</a>
         <div class="mega cols-3">
           <div>
             <h5>Handling Life Issues</h5>
@@ -154,13 +164,13 @@ def header(active=""):
 {links(HEALTH)}
             <h5 style="margin-top:18px">Self Improvement</h5>
 {links(SELF_IMP[:5])}
-            <a href="/self-improvement">All self improvement &rarr;</a>
+            <a href="{u('/self-improvement')}">All self improvement &rarr;</a>
           </div>
         </div>
       </div>
 
       <div class="has-mega">
-        <a href="/resources"{cls('resources')}>Resources</a>
+        <a href="{u('/resources')}"{cls('resources')}>Resources</a>
         <div class="mega cols-1">
           <div>
             <h5>Resources</h5>
@@ -170,7 +180,7 @@ def header(active=""):
       </div>
 
       <div class="has-mega">
-        <a href="/shop"{cls('products')}>Products</a>
+        <a href="{u('/shop')}"{cls('products')}>Products</a>
         <div class="mega cols-1">
           <div>
             <h5>Products</h5>
@@ -199,7 +209,7 @@ def header(active=""):
       </button>
     </div>
 
-    <a class="drawer-link" href="/">Home</a>
+    <a class="drawer-link" href="{u('/')}">Home</a>
 
     <details>
       <summary>About</summary>
@@ -253,35 +263,35 @@ FOOTER = """
       </div>
       <div class="footer-col">
         <h4>Explore</h4>
-        <a href="/getting-started/">Getting Started</a>
-        <a href="/articles">Articles</a>
-        <a href="/faq">FAQs</a>
-        <a href="/success-stories">Success Stories</a>
-        <a href="/videos">Videos</a>
-        <a href="/short-talks">Short Talks</a>
+        <a href="{u('/getting-started/')}">Getting Started</a>
+        <a href="{u('/articles')}">Articles</a>
+        <a href="{u('/faq')}">FAQs</a>
+        <a href="{u('/success-stories')}">Success Stories</a>
+        <a href="{u('/videos')}">Videos</a>
+        <a href="{u('/short-talks')}">Short Talks</a>
       </div>
       <div class="footer-col">
         <h4>Topics</h4>
-        <a href="/handling-life-issues">Handling Life Issues</a>
-        <a href="/health">Health</a>
-        <a href="/self-improvement">Self Improvement</a>
-        <a href="/how-to-guides">How-To Guides</a>
-        <a href="/stress-test">Stress Tester</a>
+        <a href="{u('/handling-life-issues')}">Handling Life Issues</a>
+        <a href="{u('/health')}">Health</a>
+        <a href="{u('/self-improvement')}">Self Improvement</a>
+        <a href="{u('/how-to-guides')}">How-To Guides</a>
+        <a href="{u('/stress-test')}">Stress Tester</a>
       </div>
       <div class="footer-col">
         <h4>More</h4>
-        <a href="/about/calm">About CALM</a>
-        <a href="/about/sandy-macgregor">Sandy's Story</a>
-        <a href="/seminars">Seminars</a>
+        <a href="{u('/about/calm')}">About CALM</a>
+        <a href="{u('/about/sandy-macgregor')}">Sandy's Story</a>
+        <a href="{u('/seminars')}">Seminars</a>
         <a href="https://shop.calm.com.au/">Online Store</a>
-        <a href="/about/contact">Contact</a>
+        <a href="{u('/about/contact')}">Contact</a>
       </div>
     </div>
     <div class="footer-bottom">
       <span>&copy; 2026 CALM Research Centre. Creative Accelerated Learning
         Methods.</span>
-      <span><a href="/terms">Terms</a> &nbsp;&middot;&nbsp;
-        <a href="/privacy">Privacy</a> &nbsp;&middot;&nbsp; Since 1989</span>
+      <span><a href="{u('/terms')}">Terms</a> &nbsp;&middot;&nbsp;
+        <a href="{u('/privacy')}">Privacy</a> &nbsp;&middot;&nbsp; Since 1989</span>
     </div>
   </div>
 </footer>
@@ -360,9 +370,9 @@ article = f"""
 <div class="article-hero">
   <div class="wrap">
     <div class="crumbs">
-      <a href="/">Home</a><span>&rsaquo;</span>
-      <a href="/articles">Articles</a><span>&rsaquo;</span>
-      <a href="/self-improvement/enhancing-creativity">Enhancing Creativity</a>
+      <a href="{u('/')}">Home</a><span>&rsaquo;</span>
+      <a href="{u('/articles')}">Articles</a><span>&rsaquo;</span>
+      <a href="{u('/self-improvement/enhancing-creativity')}">Enhancing Creativity</a>
     </div>
     <span class="tag">Self Improvement</span>
     <h1>Creativity is a Skill that can be Developed</h1>
@@ -383,7 +393,7 @@ article = f"""
 <div class="article-foot">
   <div class="share-row">
     <strong style="color:var(--teal)">Found this useful?</strong>
-    <a href="/articles" class="more" style="color:var(--honey-deep);font-weight:800">
+    <a href="{u('/articles')}" class="more" style="color:var(--honey-deep);font-weight:800">
       Read more articles &rarr;</a>
   </div>
 </div>
@@ -392,21 +402,21 @@ article = f"""
   <div class="wrap">
     <h2>Related reading</h2>
     <div class="card-grid">
-      <a class="card" href="/article/152">
+      <a class="card" href="{u('/article/152')}">
         <span class="tag">Creativity</span>
         <h3>Enhance Creativity</h3>
         <p>How the subconscious mind generates ideas when you stop forcing
           them, and the simple practice that makes it repeatable.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="/article/213">
+      <a class="card" href="{u('/article/213')}">
         <span class="tag">Creativity</span>
         <h3>Enhancing Creativity</h3>
         <p>Creativity is a learned skill, not a gift you are born with.
           Sandy explains the technique behind developing it.</p>
         <span class="more">Read the article &rarr;</span>
       </a>
-      <a class="card" href="/article/276">
+      <a class="card" href="{u('/article/276')}">
         <span class="tag">Goal Setting</span>
         <h3>Goal Setting</h3>
         <p>Why goals written into the subconscious mind behave differently
@@ -462,7 +472,7 @@ ARTICLES = [
      "Gratitude as a daily practice, and the measurable difference it makes."),
 ]
 
-cards = "\n".join(f"""      <a class="card" href="{h}">
+cards = "\n".join(f"""      <a class="card" href="{u(h)}">
         <span class="tag">{html.escape(tag)}</span>
         <h3>{html.escape(t)}</h3>
         <p>{html.escape(d)}</p>
@@ -482,13 +492,13 @@ listing = f"""
 <section>
   <div class="wrap">
     <div class="filter-bar">
-      <a href="/articles" class="is-active">All</a>
-      <a href="/handling-life-issues">Handling Life Issues</a>
-      <a href="/health">Health</a>
-      <a href="/self-improvement">Self Improvement</a>
-      <a href="/faq">FAQs</a>
-      <a href="/success-stories">Success Stories</a>
-      <a href="/how-to-guides">How-To Guides</a>
+      <a href="{u('/articles')}" class="is-active">All</a>
+      <a href="{u('/handling-life-issues')}">Handling Life Issues</a>
+      <a href="{u('/health')}">Health</a>
+      <a href="{u('/self-improvement')}">Self Improvement</a>
+      <a href="{u('/faq')}">FAQs</a>
+      <a href="{u('/success-stories')}">Success Stories</a>
+      <a href="{u('/how-to-guides')}">How-To Guides</a>
     </div>
 
     <div class="card-grid">
@@ -517,3 +527,58 @@ listing = f"""
 ))
 
 print("built article.html and articles.html")
+
+# ---------------------------------------------------------------- demo index
+
+index = """
+<div class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">Demo &mdash; for Sandy</div>
+    <h1>Two templates the supplied theme <em>does not cover</em></h1>
+    <p>Built in the design's own visual language, using real content from
+      calm.com.au. Try them on a phone as well &mdash; the navigation works
+      there.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="card-grid">
+      <a class="card" href="article.html">
+        <span class="tag">Template</span>
+        <h3>Article detail page</h3>
+        <p>Real content from calm.com.au/article/294. Covers 152 article
+          URLs, and the same template serves the 118 FAQs and 344 success
+          stories. Shows how 15 years of pasted WYSIWYG copy is normalised
+          into the new type scale.</p>
+        <span class="more">Open the page &rarr;</span>
+      </a>
+      <a class="card" href="articles.html">
+        <span class="tag">Template</span>
+        <h3>Content listing page</h3>
+        <p>Card grid, topic filters and pagination. One template serves
+          Articles, FAQs, Success Stories and How-To Guides &mdash; together
+          about 614 of the site's 776 URLs.</p>
+        <span class="more">Open the page &rarr;</span>
+      </a>
+    </div>
+
+    <div class="lead" style="margin-top:64px">
+      <p><strong>Open the menu on a phone.</strong> The supplied design hides
+        the navigation below 820px and ships nothing in its place, so on a
+        phone the site would have no menu at all. The drawer here is the fix.</p>
+      <p><strong>Hover &ldquo;Calm Topics&rdquo; on a desktop.</strong> Your
+        supplied nav has 5 links; the live site has about 70 destinations.
+        All of them are still reachable, without changing how the bar looks.</p>
+    </div>
+  </div>
+</section>
+"""
+
+(OUT / "index.html").write_text(shell(
+    "CALM design refresh — template demo",
+    "Article and listing templates built in the supplied CALM theme.",
+    index,
+))
+
+print("built index.html")
