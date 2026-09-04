@@ -117,6 +117,10 @@ def u(h):
     return DEMO_BASE + h if h.startswith("/") else h
 
 
+PP2_URL = ("https://shop.calm.com.au/products/"
+           "peaceful-place-series-cd-no-2-guided-imagery-download")
+
+
 def links(items):
     return "\n".join(f'          <a href="{u(h)}">{html.escape(t)}</a>'
                      for t, h in items)
@@ -127,70 +131,64 @@ def drawer_links(items):
                      for t, h in items)
 
 
+# The client asked for the menu to match the new design. The four supplied
+# pages carry four DIFFERENT navs, so there is no single "design menu" to
+# copy. This is the home page's five, which is the most complete of them,
+# plus the "Start with PP#2" call to action the other three pages carry.
+#
+# Five links cannot reach ~70 destinations, so each one leads to a hub page
+# that links its whole family. Nothing is orphaned; it is two clicks instead
+# of a wall of menu items. The footer is the second safety net.
+
+PRIMARY = [
+    ("how-it-works", "How It Works", "how-it-works.html"),
+    ("meditations", "Meditations", "meditations.html"),
+    ("about", "About Sandy", u("/about/sandy-macgregor")),
+    ("stories", "Success Stories", u("/success-stories")),
+    ("shop", "The Shop", "https://shop.calm.com.au/"),
+]
+
+# Everything the five links do not name. On desktop these live on the hub
+# pages and in the footer; in the mobile drawer they sit behind a collapsed
+# section so the drawer still opens looking like the design.
+DRAWER_EXTRA = [
+    ("Calm Topics", LIFE_ISSUES + HEALTH + SELF_IMP),
+    ("Resources", RESOURCES),
+    ("About", ABOUT),
+    ("Products", PRODUCTS),
+]
+
+
 def header(active=""):
     def cls(name):
         return ' class="is-active"' if name == active else ""
+
+    nav = "\n".join(
+        f'      <a href="{href}"{cls(key)}>{label}</a>'
+        for key, label, href in PRIMARY)
+
+    drawer_primary = "\n".join(
+        f'    <a class="drawer-link" href="{href}">{label}</a>'
+        for key, label, href in PRIMARY)
+
+    drawer_extra = "\n".join(f"""    <details>
+      <summary>{title}</summary>
+      <div class="drawer-sub">
+{drawer_links(items)}
+      </div>
+    </details>""" for title, items in DRAWER_EXTRA)
 
     return f"""<a class="skip-link" href="#main">Skip to content</a>
 
 <div class="topbar">
   <div class="topbar-inner">
-    <a href="{u('/')}" class="logo">CalmLifeSkills<span>.</span></a>
+    <a href="home.html" class="logo">CalmLifeSkills<span>.</span></a>
 
     <nav class="nav-links" aria-label="Main">
-      <div class="has-mega">
-        <a href="{u('/about')}"{cls('about')}>About</a>
-        <div class="mega cols-1">
-          <div>
-            <h5>About</h5>
-{links(ABOUT)}
-          </div>
-        </div>
-      </div>
-
-      <div class="has-mega">
-        <a href="{u('/topics')}"{cls('topics')}>Calm Topics</a>
-        <div class="mega cols-3">
-          <div>
-            <h5>Handling Life Issues</h5>
-{links(LIFE_ISSUES[:13])}
-          </div>
-          <div>
-            <h5>&nbsp;</h5>
-{links(LIFE_ISSUES[13:])}
-          </div>
-          <div>
-            <h5>Health</h5>
-{links(HEALTH)}
-            <h5 style="margin-top:18px">Self Improvement</h5>
-{links(SELF_IMP[:5])}
-            <a href="{u('/self-improvement')}">All self improvement &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="has-mega">
-        <a href="{u('/resources')}"{cls('resources')}>Resources</a>
-        <div class="mega cols-1">
-          <div>
-            <h5>Resources</h5>
-{links(RESOURCES)}
-          </div>
-        </div>
-      </div>
-
-      <div class="has-mega">
-        <a href="{u('/shop')}"{cls('products')}>Products</a>
-        <div class="mega cols-1">
-          <div>
-            <h5>Products</h5>
-{links(PRODUCTS)}
-          </div>
-        </div>
-      </div>
+{nav}
     </nav>
 
-    <a href="https://shop.calm.com.au/" class="nav-cta">Visit the Shop</a>
+    <a href="{PP2_URL}" class="nav-cta">Start with PP#2</a>
 
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false"
             aria-controls="site-drawer" data-drawer-open>
@@ -209,42 +207,12 @@ def header(active=""):
       </button>
     </div>
 
-    <a class="drawer-link" href="{u('/')}">Home</a>
+{drawer_primary}
 
-    <details>
-      <summary>About</summary>
-      <div class="drawer-sub">
-{drawer_links(ABOUT)}
-      </div>
-    </details>
+    <p class="drawer-note">Everything else on the site</p>
+{drawer_extra}
 
-    <details>
-      <summary>Calm Topics</summary>
-      <div class="drawer-sub">
-        <h5>Handling Life Issues</h5>
-{drawer_links(LIFE_ISSUES)}
-        <h5>Health</h5>
-{drawer_links(HEALTH)}
-        <h5>Self Improvement</h5>
-{drawer_links(SELF_IMP)}
-      </div>
-    </details>
-
-    <details>
-      <summary>Resources</summary>
-      <div class="drawer-sub">
-{drawer_links(RESOURCES)}
-      </div>
-    </details>
-
-    <details>
-      <summary>Products</summary>
-      <div class="drawer-sub">
-{drawer_links(PRODUCTS)}
-      </div>
-    </details>
-
-    <a href="https://shop.calm.com.au/" class="nav-cta">Visit the Shop</a>
+    <a href="{PP2_URL}" class="nav-cta">Start with PP#2</a>
   </div>
 </div>
 """
@@ -554,6 +522,23 @@ index = """
           written in place of the call. Covers how payment works, how to
           revert, what is not included, and why the domain move must be its
           own step.</p>
+        <span class="more">Open the page &rarr;</span>
+      </a>
+      <a class="card" href="meditations.html">
+        <span class="tag">New &mdash; the menu change</span>
+        <h3>Meditations hub</h3>
+        <p>The menu is now the design's five links. This is where the other
+          68 destinations went &mdash; the 19 tracks and all 49 topic pages,
+          on one page, so nothing is orphaned. Read the note at the bottom
+          of it.</p>
+        <span class="more">Open the page &rarr;</span>
+      </a>
+      <a class="card" href="how-it-works.html">
+        <span class="tag">Your design</span>
+        <h3>How It Works</h3>
+        <p>Your supplied How It Works page, links resolved, plus a "where to
+          go next" block so Getting Started, the FAQs, the how-to guides and
+          the stress tester stay reachable.</p>
         <span class="more">Open the page &rarr;</span>
       </a>
       <a class="card" href="home.html">
@@ -1182,3 +1167,267 @@ approach = f"""
 ), encoding="utf-8")
 
 print("built approach.html")
+
+
+# ------------------------------------------------------------- hub page demo
+# "Meditations" is one of the five menu items the client asked for. It has to
+# carry the 19 tracks AND the 49 topic pages the old menu used to list, or
+# those 68 destinations lose their only internal link.
+
+track_items = "\n".join(
+    f'      <a class="track-item" href="{prod(h)}">'
+    f'<span class="no">PP#{n}</span>'
+    f'<span class="name">{t}</span></a>'
+    for n, t, h in PEACEFUL_PLACE[1:]
+)
+
+
+def topic_list(items):
+    return "\n".join(f'        <a href="{u(h)}">{html.escape(t)}</a>'
+                     for t, h in items)
+
+
+meditations = f"""
+<div class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">19 Targeted Meditations</div>
+    <h1>Whatever you are working on, <em>there is a track for it</em></h1>
+    <p>Start with PP#2, Guided Imagery, which teaches your mind to reach a
+      relaxed state in about thirty seconds. Once that is in place, take
+      whichever of the nineteen matches what you are dealing with.</p>
+    <a href="{PP2_URL}" class="btn-primary">Start with PP#2 Guided Imagery</a>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="section-head" style="text-align:left;max-width:none">
+      <h2 style="font-size:32px">The nineteen tracks</h2>
+      <p style="margin:0">Each one opens its own page in the shop.</p>
+    </div>
+    <div class="track-row">
+{track_items}
+    </div>
+
+    <div class="topic-block">
+      <h3>Or find it by what you are dealing with</h3>
+      <p>Every topic below is a page of articles, guides and answers on that
+        one subject, written over thirty-odd years.</p>
+
+      <h3 style="font-size:19px;margin-top:26px">Handling Life Issues</h3>
+      <div class="topic-list">
+{topic_list(LIFE_ISSUES)}
+      </div>
+
+      <h3 style="font-size:19px;margin-top:26px">Health</h3>
+      <div class="topic-list">
+{topic_list(HEALTH)}
+      </div>
+
+      <h3 style="font-size:19px;margin-top:26px">Self Improvement</h3>
+      <div class="topic-list">
+{topic_list(SELF_IMP)}
+      </div>
+    </div>
+
+    <div class="reach">
+      <h3>Why this page exists</h3>
+      <p>You asked for the menu to match the new design, which means five
+        links instead of about seventy. That is the right call for a visitor
+        &mdash; but five links cannot point at seventy places, and a page with
+        no link pointing at it eventually drops out of Google.</p>
+      <p>So each of the five leads to a page like this one. This single page
+        carries <strong>68 destinations</strong>: the 19 meditation tracks and
+        the 49 topic pages. Nothing is orphaned. It is two clicks instead of a
+        wall of menu items, and it reads like a page rather than a directory.</p>
+      <p>The same pattern covers the rest: <strong>How It Works</strong> takes
+        Getting Started, the six videos, the FAQs, the how-to guides and the
+        stress tester. <strong>About Sandy</strong> takes his story, About
+        CALM, the charity, the Vietnam tours and contact. <strong>Success
+        Stories</strong> takes the 344 stories plus articles, videos and short
+        talks. The footer is the second safety net.</p>
+    </div>
+  </div>
+</section>
+"""
+
+(OUT / "meditations.html").write_text(shell(
+    "Meditations — Calm Life Skills",
+    "The 19 Peaceful Place meditation tracks, and every topic page on the "
+    "site, in one place.",
+    meditations,
+    active="meditations",
+    extra_css="calm-hub.css",
+), encoding="utf-8")
+
+print("built meditations.html")
+
+
+# ------------------------------------------------- how it works (from the zip)
+# The supplied page, with its placeholder anchors resolved and a "where to
+# next" block added so this page can act as the hub its menu item implies:
+# Getting Started, the six videos, the FAQs, the how-to guides, stress tester.
+
+HOW_NEXT = [
+    ("Getting Started", "Where to begin, step by step.", u("/getting-started/")),
+    ("The six short videos", "Sandy explains it in his own words.", u("/videos")),
+    ("Frequently asked questions", "118 answers, by topic.", u("/faq")),
+    ("How-to guides", "Practical, step-by-step technique.", u("/how-to-guides")),
+    ("The stress tester", "See where your own stress sits.", u("/stress-test")),
+    ("Short talks", "Bite-sized pieces on single ideas.", u("/short-talks")),
+]
+
+how_next_cards = "\n".join(f"""      <a class="card" href="{h}">
+        <h3>{t}</h3>
+        <p>{d}</p>
+        <span class="more">Open &rarr;</span>
+      </a>""" for t, d, h in HOW_NEXT)
+
+how = f"""
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">How It Works</div>
+    <h1>Real change happens in the <em>subconscious mind</em> first.</h1>
+    <p>Calm Life Skills is a practical method for creating the change you want
+      by working with your subconscious mind, not by force of will.</p>
+  </div>
+</section>
+
+<section>
+  <div class="lead">
+    <p>Most of us were taught to rely on willpower. We try harder, we push, we
+      tell ourselves to do better. Yet the habits and reactions we most want to
+      change do not live in the part of the mind that willpower can reach. They
+      live deeper, in the subconscious.</p>
+    <p>Many scientists call this <strong>88 percent (sometimes more) of your
+      mind</strong>. It runs quietly beneath your everyday awareness, shaping
+      how you feel and react without asking your permission. The good news is
+      that this part of the mind can be reached and worked with deliberately,
+      and that is exactly what Calm Life Skills teaches you to do.</p>
+    <p class="big">You do not fight the subconscious mind. You learn to speak
+      its language, in the state where it is listening.</p>
+    <p>That state is reached in a simple, natural sequence. It is not
+      mysterious, and it does not take years to learn. It begins with a single
+      foundational skill, and everything else builds on it.</p>
+  </div>
+</section>
+
+<section class="journey">
+  <div class="wrap">
+    <div class="journey-head">
+      <div class="eyebrow">The journey of brainwave states</div>
+      <h2>From a busy mind to the place where change happens</h2>
+      <p>Your mind moves through natural brainwave states every day. Calm Life
+        Skills teaches you to reach the two that matter, on purpose.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-state">
+          <div class="name">Beta</div>
+          <div class="tag">Everyday mind</div>
+        </div>
+        <div class="step-body">
+          <h3>Where you start</h3>
+          <p>Beta is the ordinary, alert, waking mind. It is busy, active and
+            full of thought. It is where we spend most of our day, and it is not
+            the state where deep change can be made.</p>
+        </div>
+      </div>
+
+      <div class="step-connector">&#9660;</div>
+
+      <div class="step">
+        <div class="step-state">
+          <div class="name">Alpha</div>
+          <div class="tag">The doorway</div>
+        </div>
+        <div class="step-body">
+          <h3><a href="{PP2_URL}">Your Peaceful Place, built by PP#2 Guided
+            Imagery</a></h3>
+          <p>The first step is to move from Beta into Alpha. PP#2 Guided
+            Imagery teaches you to build your own Peaceful Place, and every
+            time you access it you drop into Alpha and relax and release stress
+            in less than 30 seconds. Alpha is what gives you access to the
+            subconscious mind. This is the foundational skill, and it comes
+            before any meditation.</p>
+        </div>
+      </div>
+
+      <div class="step-connector">&#9660;</div>
+
+      <div class="step">
+        <div class="step-state">
+          <div class="name">Theta</div>
+          <div class="tag">The meditation state</div>
+        </div>
+        <div class="step-body">
+          <h3><a href="meditations.html">The targeted meditations, PP#3 to
+            PP#21</a></h3>
+          <p>From Alpha, each meditation carries you deeper into Theta, the
+            meditation state. This is where the real work is done. Here you can
+            speak to the subconscious mind directly, in language it
+            understands, and begin to change what you came to change.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="insight">
+  <div class="wrap">
+    <div class="eyebrow">The heart of the method</div>
+    <h2>Change happens inside first, then shows up in your life</h2>
+    <p>This is the idea that sets Calm Life Skills apart. In the Theta state,
+      change is made in the subconscious mind first. Only then does it surface
+      as the change you wanted in your conscious, everyday life.</p>
+    <p>It works from the inside out. You are not forcing a new behaviour on the
+      surface and hoping it holds. You are changing the quiet foundation the
+      behaviour grows from, so the change you want becomes natural rather than
+      effortful.</p>
+    <p class="stress">And once you can reach these states, calm and change
+      become skills you carry, not moments you wait for.</p>
+  </div>
+</section>
+
+<section class="try">
+  <div class="wrap">
+    <div class="eyebrow">See it for yourself</div>
+    <h2>Do not take our word for it. Experience it.</h2>
+    <p>The best way to understand this is not to read about it, but to feel it.
+      In the six short videos, Sandy explains these ideas in his own words and
+      guides you through simple demonstrations you can try as you watch.</p>
+    <p>One of them shows something you will not forget: how focused
+      concentration lets your body do more than you expected, and how a moment
+      of negative self talk can stop it in its tracks. Negative self talk can
+      stop anything. Once you have felt that for yourself, the rest of the
+      method makes complete sense.</p>
+    <a href="{u('/videos')}" class="btn-primary">Watch the six short videos</a>
+    <a href="{PP2_URL}" class="btn-secondary">Or begin with PP#2</a>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head" style="text-align:left;max-width:none">
+      <div class="eyebrow">Where to go next</div>
+      <h2 style="font-size:32px">Everything that explains the method</h2>
+      <p style="margin:0">This page is the entry point for the practical
+        material, so none of it depends on being named in the menu.</p>
+    </div>
+    <div class="card-grid" style="margin-top:30px">
+{how_next_cards}
+    </div>
+  </div>
+</section>
+"""
+
+(OUT / "how-it-works.html").write_text(shell(
+    "How It Works — Calm Life Skills",
+    "How Calm Life Skills works: moving from Beta to Alpha with PP#2 Guided "
+    "Imagery, then into Theta with the targeted meditations.",
+    how,
+    active="how-it-works",
+    extra_css="calm-howitworks.css",
+), encoding="utf-8")
+
+print("built how-it-works.html")
