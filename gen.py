@@ -547,6 +547,15 @@ index = """
 <section>
   <div class="wrap">
     <div class="card-grid">
+      <a class="card" href="approach.html">
+        <span class="tag">Read first</span>
+        <h3>How I would run this</h3>
+        <p>The approach, in six stages, with what each one risks &mdash;
+          written in place of the call. Covers how payment works, how to
+          revert, what is not included, and why the domain move must be its
+          own step.</p>
+        <span class="more">Open the page &rarr;</span>
+      </a>
       <a class="card" href="home.html">
         <span class="tag">Your design</span>
         <h3>Home page</h3>
@@ -941,3 +950,235 @@ home = f"""
 ), encoding="utf-8")
 
 print("built home.html")
+
+
+# ------------------------------------------------------------- approach page
+# Written in place of the initial call the client asked for. Same content a
+# call would have covered, but she can re-read it and forward it.
+
+STAGES = [
+    ("now", "Templates, before anything is touched",
+     "There is no design yet for most of the site. Rather than discover that "
+     "halfway through integration, I build each missing template first, in "
+     "your theme's own visual language, and you approve it on a link like the "
+     "ones you already have.",
+     ["Home page &mdash; <a href=\"home.html\">built</a>",
+      "Article detail &mdash; <a href=\"article.html\">built</a>, covers "
+      "articles, FAQs and success stories",
+      "Content listing &mdash; <a href=\"articles.html\">built</a>, one "
+      "template for about 614 of the 776 URLs",
+      "Topic section pages (Handling Life Issues, Health, Self Improvement)",
+      "Seminars, Contact, Videos, Short Talks, Stress Tester, Getting Started",
+      "Terms and Privacy"],
+     "<strong>Why first:</strong> a template approved on a static page costs "
+     "minutes to change. The same change after it is woven into PHP costs "
+     "hours, on a site that is live while you look at it."),
+
+    ("later", "Access and a staging copy",
+     "Your son gives me FTP or SSH and a database user, plus a staging "
+     "subdomain &mdash; something like staging.calm.com.au that is closed to "
+     "search engines. Nothing I do touches the live site until you have "
+     "clicked it on staging and said yes.",
+     ["Read-only look at the codebase first, so I can see how the templates "
+      "are actually assembled",
+      "A copy of the site running on the staging subdomain",
+      "A full backup of files and database taken before I change anything"],
+     "<strong>Risk if skipped:</strong> editing a live site with 776 indexed "
+     "pages means every mistake is public and is being crawled while it is "
+     "wrong."),
+
+    ("later", "Integration",
+     "The real work. The new stylesheet goes in, Bootstrap 3 comes out, and "
+     "every PHP template is rewired to the new markup. Content, links and the "
+     "back end are untouched &mdash; only the visual layer changes.",
+     ["Remove Bootstrap 3.0.3, jQuery UI and the shims for Internet "
+      "Explorer 8 that the site still loads",
+      "Replace the five per-page stylesheets with the one shared theme",
+      "Remove the iContact newsletter signup, as you asked",
+      "Keep every existing URL exactly as it is"],
+     "<strong>The thing to watch:</strong> your menu has about 70 "
+     "destinations and the supplied design has 5. Every one of the 70 stays "
+     "reachable, or roughly 600 pages quietly drop out of Google."),
+
+    ("later", "Cross-browser and device QA",
+     "Chrome, Firefox, Safari and Edge, at phone, tablet and desktop widths, "
+     "with screenshots at each breakpoint so you can see it rather than take "
+     "my word for it.",
+     ["Screenshots of every template at each breakpoint",
+      "Every internal link checked, not sampled",
+      "The pages that only exist on demand checked too, not just the home page"],
+     "<strong>Note:</strong> a home page that looks right proves almost "
+     "nothing. The pages that break are the ones nobody thinks to open."),
+
+    ("later", "Go live on calm.com.au",
+     "The design goes live on the domain you already have, with the old "
+     "theme kept intact so a revert is one step, not a rebuild. Then we leave "
+     "it alone for a week or two and watch that nothing moved.",
+     ["A hand-over note listing every file touched",
+      "Exact revert instructions",
+      "The old theme kept in place, not deleted"],
+     "<strong>Why not do the rename here:</strong> see the next stage."),
+
+    ("later", "The move to calmlifeskills.com &mdash; separately",
+     "This is the part that can actually cost you traffic, and it has nothing "
+     "to do with how the site looks. Some of your pages have been indexed "
+     "since 2014. If they move address without a redirect, that history does "
+     "not move with them.",
+     ["A permanent redirect for each of the 776 addresses to its new one",
+      "calm.com.au stays registered and pointing at the new site "
+      "indefinitely &mdash; not a year, permanently",
+      "Canonical tags, sitemap and Search Console change-of-address updated",
+      "The /article/23 to /faq/23 quirk carried across, or Google sees two "
+      "copies of everything"],
+     "<strong>Do not combine this with the redesign.</strong> If both land "
+     "at once and traffic dips, there is no way to tell which one did it and "
+     "no clean way to undo either."),
+]
+
+stage_html = "\n".join(f"""    <div class="stage">
+      <div class="stage-no">{i:02d}</div>
+      <div>
+        <span class="status {st}">{'Done' if st == 'done' else
+                                    'In progress' if st == 'now' else
+                                    'Once access arrives'}</span>
+        <h3>{title}</h3>
+        <p>{body}</p>
+        <ul>{''.join(f'<li>{b}</li>' for b in bullets)}</ul>
+        <div class="risk">{risk}</div>
+      </div>
+    </div>""" for i, (st, title, body, bullets, risk) in enumerate(STAGES, 1))
+
+approach = f"""
+<div class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">For Sandy &mdash; instead of a call</div>
+    <h1>How I would run the <em>Calm Life Skills</em> refresh</h1>
+    <p>You asked for a call to talk through the approach. I do not do calls,
+      so here is the same conversation written down, which has the advantage
+      that you can re-read it, forward it to your son, and hold me to it.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="lead">
+      <p>Everything below is based on what your site actually does today,
+        measured rather than assumed. The numbers come from your sitemap,
+        your page source and your Shopify store.</p>
+    </div>
+
+    <div class="facts">
+      <div class="fact"><strong>776</strong><span>addressable pages in your
+        sitemap</span></div>
+      <div class="fact"><strong>~13</strong><span>page templates behind
+        them</span></div>
+      <div class="fact"><strong>~70</strong><span>destinations in your current
+        menu</span></div>
+      <div class="fact"><strong>5</strong><span>links in the supplied
+        design's menu</span></div>
+      <div class="fact"><strong>4</strong><span>pages the supplied design
+        covers</span></div>
+      <div class="fact"><strong>2014</strong><span>last date stamped on your
+        sitemap</span></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--cream-warm)">
+  <div class="wrap">
+    <div class="section-head" style="text-align:left;max-width:none">
+      <div class="eyebrow">The plan</div>
+      <h2 style="font-size:34px">Six stages, in this order</h2>
+    </div>
+{stage_html}
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head" style="text-align:left;max-width:none">
+      <div class="eyebrow">The awkward questions, answered up front</div>
+      <h2 style="font-size:34px">Things you would have asked on the call</h2>
+    </div>
+
+    <dl class="qa">
+      <dt>How do I pay you?</dt>
+      <dd>As we go. I do a piece, you look at it, and if you are happy I ask
+        for a small release for that piece. I do not quote a lump sum up
+        front and I do not ask for money for work you have not seen. The
+        three pages you already have were free, and I said so at the time.</dd>
+
+      <dt>What happens if I do not like a template?</dt>
+      <dd>You say so and I change it, before it goes anywhere near your
+        codebase. That is the entire reason the templates come first.</dd>
+
+      <dt>Can we undo this if it goes wrong?</dt>
+      <dd>Yes. The old theme stays on the server rather than being deleted,
+        and the hand-over note tells you exactly which files to put back. A
+        revert should be minutes, not a rebuild.</dd>
+
+      <dt>Will my Google rankings survive?</dt>
+      <dd>Through the redesign, yes &mdash; no URL changes, no content
+        changes, and every one of the roughly 70 menu destinations stays
+        linked. Through the domain move, only if the redirects are done
+        properly, which is why it is its own stage.</dd>
+
+      <dt>How long?</dt>
+      <dd>Honestly, it depends mostly on how fast approvals and access come
+        back, not on how fast I work. The templates I can keep producing now.
+        Integration cannot start until there is a staging copy to do it on.</dd>
+    </dl>
+
+    <div class="notbuilt">
+      <h3>What this project does not include</h3>
+      <ul>
+        <li><strong>Your Shopify shop.</strong> It lives on a different
+          system at shop.calm.com.au and is not part of the PHP codebase. You
+          said to leave it as is, so it keeps its current theme. The new pages
+          link into it and those links all work, but the shop itself will not
+          look like the new design until it is done as its own project.</li>
+        <li><strong>New content.</strong> Words, articles and images stay as
+          they are. This is a visual layer change.</li>
+        <li><strong>The domain move itself</strong>, unless you ask for it.
+          It is listed above as stage six because it needs to be planned, but
+          it is a separate piece of work from the refresh.</li>
+        <li><strong>Email on the new domain.</strong> calmlifeskills.com
+          currently points its mail at the registrar's free forwarding. If you
+          want real mailboxes there, that is worth sorting separately, before
+          anything is printed with the new name on it.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--cream-warm)">
+  <div class="wrap">
+    <div class="section-head" style="text-align:left;max-width:none">
+      <div class="eyebrow">Over to you</div>
+      <h2 style="font-size:34px">What I need to keep moving</h2>
+    </div>
+    <div class="lead">
+      <p><strong>Nothing, to carry on building templates.</strong> I can keep
+        producing those on my own side and you approve them as they appear.</p>
+      <p><strong>To start integration:</strong> FTP or SSH plus a database
+        user from your son, and a staging subdomain closed to search
+        engines.</p>
+      <p><strong>Decisions I am waiting on:</strong> whether PP#2 is $14.95
+        USD or $20.00 AUD; whether the three meditation names that differ
+        between the design and your shop should follow the design or the shop;
+        whether the design's &ldquo;How It Works&rdquo; replaces Getting
+        Started or sits beside it; and which template you want next.</p>
+    </div>
+  </div>
+</section>
+"""
+
+(OUT / "approach.html").write_text(shell(
+    "How I would run the Calm Life Skills refresh",
+    "The approach, sequencing and risks for the Calm Life Skills design "
+    "refresh, written in place of a call.",
+    approach,
+    extra_css="calm-approach.css",
+), encoding="utf-8")
+
+print("built approach.html")
