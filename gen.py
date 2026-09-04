@@ -288,7 +288,7 @@ FOOTER = """
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2026 CALM Research Centre. Creative Accelerated Learning
+      <span>&copy; 2026 Calm Life Skills. Creative Accelerated Learning
         Methods.</span>
       <span><a href="{u('/terms')}">Terms</a> &nbsp;&middot;&nbsp;
         <a href="{u('/privacy')}">Privacy</a> &nbsp;&middot;&nbsp; Since 1989</span>
@@ -338,7 +338,9 @@ FOOTER = """
 """
 
 
-def shell(title, description, body, active=""):
+def shell(title, description, body, active="", extra_css=""):
+    extra = (f'\n<link href="assets/{extra_css}" rel="stylesheet">'
+             if extra_css else "")
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -349,7 +351,7 @@ def shell(title, description, body, active=""):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,72,400;0,72,500;0,72,600;1,72,400;1,72,500&family=Mulish:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="assets/calm-theme.css" rel="stylesheet">
+<link href="assets/calm-theme.css" rel="stylesheet">{extra}
 </head>
 <body>
 {header(active)}
@@ -429,7 +431,7 @@ article = f"""
 """
 
 (OUT / "article.html").write_text(shell(
-    "Creativity is a Skill that can be Developed | CALM Research Centre",
+    "Creativity is a Skill that can be Developed | Calm Life Skills",
     "Creativity is such a diverse word and can have a whole spectrum of "
     "meaning. There is the sheer joy of the feeling of achievement of having "
     "created something.",
@@ -519,9 +521,9 @@ listing = f"""
 """
 
 (OUT / "articles.html").write_text(shell(
-    "Articles | CALM Research Centre",
+    "Articles | Calm Life Skills",
     "Articles on the subconscious mind, meditation and life issues from "
-    "Sandy MacGregor and the CALM Research Centre.",
+    "Sandy MacGregor and Calm Life Skills.",
     listing,
     active="resources",
 ))
@@ -534,16 +536,26 @@ index = """
 <div class="page-hero">
   <div class="wrap">
     <div class="eyebrow">Demo &mdash; for Sandy</div>
-    <h1>Two templates the supplied theme <em>does not cover</em></h1>
-    <p>Built in the design's own visual language, using real content from
-      calm.com.au. Try them on a phone as well &mdash; the navigation works
-      there.</p>
+    <h1>The new home page, <em>plus the templates</em> the design does not
+      cover</h1>
+    <p>Built in the design's own visual language, using real content and real
+      destinations from calm.com.au. Try them on a phone as well &mdash; the
+      navigation works there.</p>
   </div>
 </div>
 
 <section>
   <div class="wrap">
     <div class="card-grid">
+      <a class="card" href="home.html">
+        <span class="tag">Your design</span>
+        <h3>Home page</h3>
+        <p>The supplied home page design, with every placeholder anchor
+          replaced by its real destination and each of the 19 meditation
+          chips linked to its own product in the shop. Prices are not
+          reprinted here &mdash; see the note below.</p>
+        <span class="more">Open the page &rarr;</span>
+      </a>
       <a class="card" href="article.html">
         <span class="tag">Template</span>
         <h3>Article detail page</h3>
@@ -570,15 +582,362 @@ index = """
       <p><strong>Hover &ldquo;Calm Topics&rdquo; on a desktop.</strong> Your
         supplied nav has 5 links; the live site has about 70 destinations.
         All of them are still reachable, without changing how the bar looks.</p>
+      <p><strong>About the prices.</strong> The supplied home page prints
+        &ldquo;$14.95 USD&rdquo; for PP#2. Your shop sells it for $20.00 AUD.
+        A price typed into a page drifts the moment you change it in Shopify,
+        so the buttons here link to the product instead of restating a
+        number. Worth deciding which figure is the correct one.</p>
+      <p><strong>Three chip names do not match the shop.</strong> The design
+        lists PP#3 as &ldquo;Releasing Physical Pain&rdquo;, PP#5 as
+        &ldquo;Deeper Meditation&rdquo; and PP#20 as &ldquo;Preparation for a
+        Peaceful Birth&rdquo;. The shop sells those as Releasing Hurt,
+        Meditation, and Handling The Labour Of Childbirth. I used the shop's
+        names so nobody clicks through to a different title than they
+        expected.</p>
     </div>
   </div>
 </section>
 """
 
 (OUT / "index.html").write_text(shell(
-    "CALM design refresh — template demo",
-    "Article and listing templates built in the supplied CALM theme.",
+    "Calm Life Skills design refresh \u2014 demo",
+    "Home page plus article and listing templates built in the supplied "
+    "Calm Life Skills theme.",
     index,
 ))
 
 print("built index.html")
+
+
+# ---------------------------------------------------------------- home page
+# The supplied homepage design, with every placeholder anchor ("#program",
+# "#shop", "#about") replaced by the real destination on the live site, and
+# every meditation chip turned into a link to its own product.
+
+SHOP = "https://shop.calm.com.au"
+
+
+def prod(handle):
+    return f"{SHOP}/products/{handle}"
+
+
+# Titles here are the SHOP's titles, not the design's. Three chips in the
+# supplied file name a different track to the one actually sold:
+#   PP#3  design "Releasing Physical Pain"      shop "Releasing Hurt"
+#   PP#5  design "Deeper Meditation"            shop "Meditation"
+#   PP#20 design "Preparation for a Peaceful Birth"
+#                                               shop "Handling The Labour Of
+#                                                     Childbirth"
+# Flagged to the client; the shop is treated as the source of truth so a
+# visitor never clicks a name that does not exist when they get there.
+PEACEFUL_PLACE = [
+    (2, "Guided Imagery", "peaceful-place-series-cd-no-2-guided-imagery-download"),
+    (3, "Releasing Hurt", "peaceful-place-series-no-3-releasing-hurt-download"),
+    (4, "Healing Yourself", "peaceful-place-series-no-4-healing-yourself-download"),
+    (5, "Meditation", "peaceful-place-series-no-5-meditation-download"),
+    (6, "Forgiveness", "peaceful-place-series-no-6-forgiveness-download"),
+    (7, "Tapping Your Creativity",
+     "peaceful-place-series-no-7-tapping-your-creativity-download"),
+    (8, "Weight Release", "peaceful-place-series-no-8-weight-release-download"),
+    (9, "Letting Go Anger", "peaceful-place-series-no-9-letting-go-anger-download"),
+    (10, "Self Worth and Confidence",
+     "peaceful-place-series-no-10-self-worth-and-confidence-download"),
+    (11, "Achieving In Exams and Effective Study",
+     "peaceful-place-series-no-11-achieving-in-exams-and-effective-study-download"),
+    (12, "Making Sleep Easy and Useful",
+     "peaceful-place-series-no-12-making-sleep-easy-and-useful-download"),
+    (13, "Inner Peace and Harmony",
+     "peaceful-place-series-no-13-inner-peace-and-harmony-download"),
+    (14, "Improving Relationships",
+     "peaceful-place-series-no-14-improving-relationships-download"),
+    (15, "Overcoming Fear", "peaceful-place-series-no-15-overcoming-fear-download"),
+    (16, "Acceptance and Letting Go",
+     "peaceful-place-series-no-16-acceptance-and-letting-go-download"),
+    (17, "Unconditional Love",
+     "peaceful-place-series-no-17-unconditional-love-download"),
+    (18, "Overcoming Worry &amp; Anxiousness",
+     "peaceful-place-series-no-18-overcoming-worry-anxiousness-download"),
+    (19, "Moving Through Depression",
+     "peaceful-place-series-no-19-moving-through-depression-download"),
+    (20, "Handling The Labour Of Childbirth",
+     "peaceful-place-series-no-20-handling-the-labour-of-childbirth-download"),
+    (21, "Quit Smoking", "peaceful-place-series-no-21-quit-smoking-download"),
+]
+
+PP2 = prod(PEACEFUL_PLACE[0][2])
+
+med_chips = "\n".join(
+    f'      <a class="med-chip" href="{prod(h)}">{t} PP#{n}</a>'
+    for n, t, h in PEACEFUL_PLACE[1:]
+)
+
+FOUNDATION = [
+    ("Video 01", "There&rsquo;s a part of your mind you were never taught to use.",
+     "The subconscious runs the majority of what you do. Most people never get "
+     "shown how to speak to it deliberately."),
+    ("Video 02",
+     "It&rsquo;s already being used successfully by athletes, doctors and students.",
+     "The same mental training turns up wherever performance under pressure "
+     "matters. It is not fringe, it is just not taught."),
+    ("Video 03", "You can do this yourself, right now.",
+     "The entry technique takes thirty seconds and needs no equipment, no "
+     "teacher and no belief system."),
+    ("Video 04", "There&rsquo;s measurable science behind it.",
+     "Brainwave states are measurable. So are blood pressure and pulse. The "
+     "demonstrations show the change as it happens."),
+    ("Video 05",
+     "This works for life&rsquo;s hardest moments, not just minor ones.",
+     "Grief, trauma, chronic pain. The technique was built under real pressure, "
+     "not in a seminar room."),
+    ("Video 06", "Now you understand enough. Take the next step.",
+     "Once the idea makes sense, the practice is what changes things. That "
+     "starts with PP#2."),
+]
+
+foundation_cards = "\n".join(f"""      <div class="foundation-card">
+        <div class="foundation-label">{lbl}</div>
+        <h3>{h}</h3>
+        <p>{p}</p>
+      </div>""" for lbl, h, p in FOUNDATION)
+
+STORIES = [
+    ("I finally sleep through the night. It took two weeks of the sleep "
+     "meditation, not months.", "M.T., Ohio"),
+    ("I used the fear meditation before my surgery. I went in steadier than I "
+     "thought possible.", "R.K., Queensland"),
+    ("Quitting smoking finally stuck once I understood why I reached for it in "
+     "the first place.", "D.P., Surrey"),
+    ("My exam anxiety used to wreck my grades. The study performance track "
+     "changed that completely.", "A.S., California"),
+]
+
+story_cards = "\n".join(f"""      <div class="story-card">
+        <p class="story-quote">&ldquo;{q}&rdquo;</p>
+        <p class="story-name">{n}</p>
+      </div>""" for q, n in STORIES)
+
+home = f"""
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Creative Accelerated Learning Methods, Since 1989</div>
+      <h1>Resilience isn&rsquo;t willpower. <em>It&rsquo;s trained</em>, in the
+        quiet of your own mind.</h1>
+      <p class="hero-sub">Calm Life Skills teaches you to work with your
+        subconscious mind, through guided imagery and targeted meditation, so
+        calm becomes a skill you carry, not a moment you wait for.</p>
+      <div class="hero-actions">
+        <a href="#start" class="btn-primary">Learn to Relax in 30 Seconds</a>
+        <a href="{u('/about/sandy-macgregor')}" class="btn-secondary">Meet Sandy</a>
+      </div>
+      <div class="hero-trust">
+        <div><strong>1989</strong>Program founded</div>
+        <div><strong>19</strong>Targeted meditations</div>
+        <div><strong>6</strong>Foundational short videos</div>
+        <div><strong>3</strong>Continents taught on</div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="brainwave-flow">
+        <svg viewBox="0 0 760 200" preserveAspectRatio="xMidYMid meet"
+             xmlns="http://www.w3.org/2000/svg" role="img"
+             aria-label="A brainwave tracing slowing from Beta through Alpha and
+                         Theta into Delta">
+          <path class="flow-line" d="M0,100
+            Q6,0 12,100 Q18,200 24,100 Q30,2 36,100 Q42,198 48,100 Q54,0 60,100 Q66,200 72,100 Q78,2 84,100 Q90,198 96,100 Q102,0 108,100 Q114,200 120,100 Q126,4 132,100 Q138,196 144,100 Q150,0 156,100 Q162,200 168,100 Q174,4 180,100
+            C189,44 196,44 205,100 C214,156 221,156 230,100 C239,40 246,40 255,100 C264,158 271,158 280,100 C289,46 296,46 305,100 C314,154 321,154 330,100 C339,43 346,43 355,100 C364,157 371,157 380,100
+            C393,56 403,56 416,100 C429,144 439,144 452,100 C465,54 475,54 488,100 C501,146 511,146 524,100 C537,56 547,56 560,100
+            C578,85 592,85 610,100 C628,115 642,115 660,100 C678,86 692,86 710,100 C728,114 742,114 760,100"/>
+        </svg>
+        <div class="flow-labels">
+          <div class="flow-label">
+            <div class="wave-name">Beta</div>
+            <div class="wave-state">Alert</div>
+          </div>
+          <div class="flow-label">
+            <div class="wave-name">Alpha</div>
+            <div class="wave-state">Relaxed</div>
+          </div>
+          <div class="flow-label">
+            <div class="wave-name">Theta</div>
+            <div class="wave-state">Meditative</div>
+          </div>
+          <div class="flow-label">
+            <div class="wave-name">Delta</div>
+            <div class="wave-state">Deep sleep</div>
+          </div>
+        </div>
+        <div class="brainwave-caption">Calm Life Skills teaches you to create the
+          habits you want by using the Theta state of your subconscious mind</div>
+      </div>
+    </div>
+  </div>
+  <div class="wave-divider">
+    <svg viewBox="0 0 1600 80" preserveAspectRatio="none" aria-hidden="true"
+         xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C100,10 200,70 300,40 C400,10 500,70 600,40 C700,10 800,70 900,40 C1000,10 1100,70 1200,40 C1300,10 1400,70 1500,40 C1550,25 1580,40 1600,40 L1600,80 L0,80 Z
+                M1600,40 C1700,10 1800,70 1900,40 C2000,10 2100,70 2200,40 C2300,10 2400,70 2500,40 C2600,10 2700,70 2800,40 C2900,10 3000,70 3100,40 C3150,25 3180,40 3200,40 L3200,80 L1600,80 Z"
+            fill="#A8D5C5" opacity="0.55"/>
+    </svg>
+  </div>
+</section>
+
+<section class="tracks" id="start">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Two ways to begin</div>
+      <h2>Wherever you&rsquo;re starting from, there&rsquo;s a path to success</h2>
+      <p>Everyone starts in the same place. PP#2, Guided Imagery, teaches your
+        mind to relax and release stress in 30 seconds. Only once that skill is
+        in place do the targeted meditations work as they should.</p>
+    </div>
+    <div class="track-grid">
+      <div class="track-card quick">
+        <span class="track-tag">I want help now</span>
+        <h3>Start with Guided Imagery</h3>
+        <p>A guided imagery track that teaches your mind to relax and release
+          stress in 30 seconds, no experience required. This is step one, before
+          any targeted meditation.</p>
+        <a href="{PP2}" class="track-link">Start with PP#2 Guided Imagery &rarr;</a>
+      </div>
+      <div class="track-card learn">
+        <span class="track-tag">I want to understand first</span>
+        <h3>See how Calm Life Skills works</h3>
+        <p>Do the 6 foundational short videos, read about the man who built it
+          under fire, and why the subconscious mind responds to this kind of
+          training.</p>
+        <a href="{u('/getting-started/')}" class="track-link">Start here &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="foundation" id="videos">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Learn why this works</div>
+      <h2>The six foundation short videos.</h2>
+      <p>Six short videos, in order. By the end you will understand what the
+        subconscious mind does, why it responds to imagery, and what to do next.</p>
+    </div>
+    <div class="foundation-grid">
+{foundation_cards}
+    </div>
+    <a href="{u('/videos')}" class="foundation-cta">Watch the six videos</a>
+  </div>
+</section>
+
+<section class="program" id="program">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The Program</div>
+      <h2>Two steps, moving into Alpha and then into Theta</h2>
+      <p>Guided Imagery first, to teach the entry. Then whichever targeted
+        meditation matches what you are working on.</p>
+    </div>
+    <div class="program-grid">
+      <div class="program-card">
+        <div class="program-step">PP#2</div>
+        <h3>Guided Imagery</h3>
+        <p>The foundation track. Teaches your mind to reach a relaxed state in
+          about thirty seconds, which is the skill everything else rests on.</p>
+        <a href="{PP2}" class="track-link">See it in the shop &rarr;</a>
+      </div>
+      <div class="program-card">
+        <div class="program-step">PP#3 to PP#21</div>
+        <h3>The 19 Meditations</h3>
+        <p>One track per issue, from sleep and pain to confidence, grief and
+          quitting smoking. Take the one you need, when you need it.</p>
+        <a href="{SHOP}/collections/meditation" class="track-link">Browse all
+          meditations &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="meditations" id="meditations">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">19 Targeted Meditations</div>
+      <h2>Whatever you want to achieve, there&rsquo;s a track for it</h2>
+      <p>Every one of these opens its own page in the shop.</p>
+    </div>
+    <div class="med-grid">
+{med_chips}
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="wrap about-grid">
+    <div>
+      <a class="video-frame" href="{u('/videos')}"
+         aria-label="Watch: Who Is Sandy MacGregor?">
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="video-caption">Who Is Sandy MacGregor?</div>
+      </a>
+      <div class="archive-tag">Videos covering seminar snippets, a four part
+        series of Resilience Lectures, the Brainwave Proof demonstrations, Sandy's
+        Vietnam experiences and more.
+        <a href="{u('/videos')}">Watch More &rarr;</a></div>
+    </div>
+    <div class="about-copy">
+      <div class="eyebrow">About Sandy</div>
+      <h2>Trained under fire. Now teaching calm.</h2>
+      <p>Sandy MacGregor served in Vietnam, was decorated for it, and later lost
+        three daughters to a single act of violence. What he built afterwards was
+        not a theory about resilience. It was the thing that got him through.</p>
+      <p>Since 1989 he has taught these techniques on three continents, to
+        boardrooms, classrooms and people in the worst week of their lives.</p>
+      <div class="credentials">
+        <span class="credential-pill">Royal Military College Duntroon</span>
+        <span class="credential-pill">Military Cross</span>
+        <span class="credential-pill">US Bronze Star</span>
+        <span class="credential-pill">Chartered Civil Engineer</span>
+      </div>
+      <a href="{u('/about/sandy-macgregor')}" class="btn-secondary">Read Sandy's
+        story</a>
+    </div>
+  </div>
+</section>
+
+<section class="stories" id="stories">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Real Results</div>
+      <h2>Four of hundreds of stories like these</h2>
+    </div>
+    <div class="stories-grid">
+{story_cards}
+    </div>
+    <p class="stories-disclaimer">Individual results vary. These accounts reflect
+      personal experiences and are not guarantees of outcome.
+      <a href="{u('/success-stories')}">Read more success stories &rarr;</a></p>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="wrap">
+    <h2>Why Calm Life Skills Exists?</h2>
+    <p>To help you understand and deliberately use the other 88% of your mind,
+      being the subconscious mind. Using this power means you can deal more
+      effectively with challenges and create positive change in your life.</p>
+    <p class="mission">Our Mission is to teach about the subconscious mind and
+      encourage people to use it to their own advantage.</p>
+    <a href="{PP2}" class="btn-primary">Begin with PP#2 Guided Imagery</a>
+  </div>
+</section>
+"""
+
+(OUT / "home.html").write_text(shell(
+    "Calm Life Skills \u2014 resilience trained, not willed",
+    "Calm Life Skills teaches you to work with your subconscious mind through "
+    "guided imagery and targeted meditation. Founded by Sandy MacGregor, 1989.",
+    home,
+    active="home",
+    extra_css="calm-home.css",
+), encoding="utf-8")
+
+print("built home.html")
